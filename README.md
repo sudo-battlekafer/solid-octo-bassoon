@@ -61,4 +61,14 @@ For this playbook, you need a minimum of FOUR variables in your vault:
 
 Good link on [digital ocean](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data)
 
+TODO
+====
+
+- add in NAS backup
+- finish tagging the roles
+- adding offsite backup lookup
+- paramaterize the hardcoded tasks I have
+- add in chart templates for the arrs'
+- add in esxi support
+
 
