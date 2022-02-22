@@ -12,7 +12,7 @@ resource "proxmox_vm_qemu" "{{ inventory_hostname_short }}" {
     ciuser = "{{ admin_ssh_user }}"
     sockets = 1
     agent = 1
-    cicustom = "user=local:snippets/user-data.yml"
+    cicustom = "user=snippets:snippets/cloud-init.yml"
     scsihw = "virtio-scsi-pci"
     bootdisk = "scsi0"   
     vcpus = 0 

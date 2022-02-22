@@ -15,6 +15,14 @@
     failed_when: _swarm_template_exists.rc not in [0,1]
     when: "inventory_hostname in groups['proxmox_servers']" 
 
+  - name: Replace user-data.yml for Cloud-Init
+    copy: 
+      src: cloud-init.yaml.j2
+      dest: /snippets/snippets/cloud-init.yml
+      owner: root
+      group: www-data
+      mode: 0644
+      
   # Create template for controller
   - name: Create proxmox swarm template template if it doesn't already exist
     when: 
@@ -54,7 +62,7 @@
       command: qm set {{ template_vm_id | quote}} -agent enabled=1
 
     - name: "[create template] custom integrations"
-      command: qm set {{ template_vm_id | quote}} --cicustom "user=local:snippets/user-data.yml"
+      command: qm set {{ template_vm_id | quote}} --cicustom "user=snippets:snippets/cloud-init.yml"
 
     - name: "[create template] Turn VM into template"
       command: qm template {{ template_vm_id | quote}}
@@ -90,20 +98,6 @@
     when: "inventory_hostname in groups['proxmox_vms']" 
     with_items: "{{ groups['proxmox_vms'] }}"
 
-  # - name: Create terraform plan for git
-  #   template:
-  #     src: git.tf.j2
-  #     dest: "{{ terraform_dir }}/{{ inventory_hostname_short }}.tf"
-  #   when: "inventory_hostname in groups['git']" 
-  #   with_items: "{{ groups['git'] }}"
-
-  # - name: Create terraform plan for ci runners
-  #   template:
-  #     src: swarm_node.tf.j2
-  #     dest: "{{ terraform_dir }}/{{ inventory_hostname_short }}.tf"
-  #   when: "inventory_hostname in groups['proxmox_vms_ci']" 
-  #   with_items: "{{ groups['proxmox_vms_ci'] }}"    
-
   - name: Actually create VMs with terraform (can only run once)
     when: "inventory_hostname in groups['proxmox_servers']"
     run_once: true 
@@ -131,7 +125,7 @@
                   
 - name: Don't exit this play until the machines are reachable (they might still be booting up)
   wait_for_connection: 
-    delay: 60
-    timeout: 300
+    delay: 80
+    timeout: 350
   vars:
     ansible_pipelining: no
