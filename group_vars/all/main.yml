@@ -1,0 +1,222 @@
+# The Ansible roles allow you to override certain aspects of the environment generation and recipe deployment.
+
+# This section describes options you can set in your group_vars/<your username>/main.yml to customize your Proxmox VM environment
+# proxmox_vm_ram: 4096                                  # How much RAM to give each VM
+# proxmox_vm_cores: 2                                   # How many processors to give each VM
+# proxmox_vm_network_bridge: vmbr0                      # Which network to attach to each VM
+# proxmox_vm_vlan_tag: 8                                # VLAN tag to assign to each VM. Comment out to use no VLAN
+# proxmox_vm_disk0_size: 10G                            # Size of the primary (system) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+# proxmox_vm_disk1_size: 20G                            # Size of the secondary (data) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+# proxmox_storage: pve2                                 # Which Proxmox storage
+# proxmox_vlan_gateway: 192.168.38.1                    # Network gateway for the VM network adapter
+# terraform_dir: ~/.terraform/funky-penguins-are-funky  # Directory to store the generated Terraform files
+# admin_ssh_user: <your-user-name>                      # User to be created on each VM
+# admin_ssh_key: <your-public-key>                      # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
+# proxmox_host_name: <server-name>                      # Name of the proxmox host that commands will be run against
+# proxmox_host_username: root@pam                       # Proxmox user name for running commands
+
+# This section describes options you can set in your group_vars/<your username>/main.yml to customize your vSphere VM environment
+# vsphere_datacenter: dc1
+# vsphere_datastore: datastore1
+# vsphere_compute_cluster: your_vsphere_cluster
+# vsphere_network: your_vsphere_portgroup
+# vsphere_template_folder: vm_template_folder
+# vsphere_template_name: vm_template_name
+# vsphere_vm_ram: 4096                                  # How much RAM to give each VM
+# vsphere_vm_cores: 2                                   # How many processors to give each VM
+# vsphere_vm_disk0_size: 10G                            # Size of the primary (system) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+# vsphere_vm_disk1_size: 60G                            # Size of the secondary (data) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+# vsphere_vlan_gateway: 192.168.38.1                    # Network gateway for the VM network adapter
+# vsphere_dns_server: 8.8.8.8 #Set to your DNS server
+# terraform_dir: ~/.terraform/funky-penguins-are-funky  # Directory to store the generated Terraform files
+# admin_ssh_user: <your-user-name>                      # User to be created on each VM
+# admin_ssh_key: <your-public-key>                      # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
+# vsphere_host_name: <server-name>                      # Name of the vsphere host that commands will be run against
+# vsphere_host_username: administrator@vsphere.local    # vsphere user name for running commands
+
+
+# These values are supplied by default using vars/01_fake_vault.yml, and hopefully overridden
+# by your own vars/vault.yml (encrypted)
+
+proxmox_host_password: "{{ vault_proxmox_host_password }}"
+vcenter_host_password: "{{ vault_vcenter_host_password }}"
+ceph_dashboard_username: "{{ vault_ceph_dashboard_username }}"
+ceph_dashboard_password: "{{ vault_ceph_dashboard_password }}"
+
+# Set this value to your DNS domain - it's used to generate URLs for the various recipes, such as "radarr.batman.com", "sabnzbd.batman.com", etc
+dns_domain: example.com
+
+# This is a regex
+ceph_target_disk: "sdb"
+
+# keepalived settings
+keepalived_virtual_ips: 192.168.38.100
+keepalived_unicast_peers: 
+  - 192.168.38.101
+  - 192.168.38.102
+  - 192.168.38.103
+
+# The user needs to set these in their own config if they want to log into DockerHub and avoid ratelimits
+docker_hub_username:
+docker_hub_password: 
+docker_hub_email:
+
+# This section describes options you can use to override various recipe settings.
+# These overrides should be placed inside the "recipe_config" section of your group_vars/<your username>/main.yml file
+# under a node that is the name of the recipe (see recipe_default_config below for example)
+# They will be merged with the "recipe_default_config" below and override any settings that exist there
+
+# subdomain: <alternate-subdomain>  # Overrides the default URL that you use to access a recipe 
+                                    # (eg: requests.example.com instead of the default ombi.example.com)
+# subnet: 172.16.200.0/24           # Override the default subnet as defined in the recipe YAML config file
+# volumes:                          # Allows you to specify additional volumes to be mounted in the container
+#   - "/var/data/test1:/test1"      # Can be local directories or network volumes mounted to a local directory
+#   - "/var/data/test2:/test2"      # NOTE: Directories MUST exist or the stack will fail to deploy
+# ports:                            # Allows you to specify ports to be published. This can aid in accessing services on the local nework
+#   - 8000:80                       # without going through the reverse proxy and (optional) forward auth step
+# env:                              # Allows you to override the values in the environment file for the recipe
+  # AWS_ACCESS_KEY_ID: "{{ vault_config.traefik.aws_access_key_id }}"         # This example illustrates how to keep secrets in ansible-vault
+  # AWS_SECRET_ACCESS_KEY: "{{ vault_config.traefik.aws_secret_access_key }}" # This example illustrates how to keep secrets in ansible-vault
+  # AWS_REGION: ""                                                            # It's also OK to have a blank value                                
+
+recipe_config: 
+  this_dictionary_intentionally_left_blank: # This exists so that the user can override recipe_defaults in another vars file
+
+# Default values go here. Don't change these, create your own "recipe_config" dictionary in your group_vars/<your username>/main.yml file
+recipe_default_config:
+  ceph:
+    enabled: true
+  keepalived:
+    enabled: true
+  traefikv1:
+    enabled: true
+    dns_provider: route53
+  traefikv2:
+    dns_provider: route53
+  traefik-forward-auth:
+    env:
+      DEFAULT_PROVIDER: oidc
+      PROVIDERS_OIDC_CLIENT_ID: foo
+      PROVIDERS_OIDC_CLIENT_SECRET: bar
+      PROVIDERS_OIDC_ISSUER_URL: https://dex.example.com
+      SECRET: imtoosexyformyshorts
+      AUTH_HOST: auth.example.com
+      COOKIE_DOMAIN: example.com
+  autopiratev2:
+    enabled: false
+    stacked_recipes: # Use this to "stack" a recipe by combining individual recipes into one
+    - sonarr
+    - sonarr4k
+    - radarr
+    - radarr4k
+    - bazarr
+    - bazarr4k
+    - nzbget
+    - oscarr
+    - rtorrent
+    - lidarr
+    - jackett
+    - nzbhydra
+    - ombi
+    - headphones
+    - mylar
+  bazarr:
+    enabled: false
+  bazarr4k:
+    enabled: false
+  bitwarden:    
+    enabled: false
+  duplicati:
+    enabled: false
+  heimdall:
+    enabled: false
+  headphones:
+    enabled: false
+  kanboard:
+    enabled: false
+  komga:
+    enabled: false
+  lazylibrarian:
+    enabled: false
+    env:   
+      DOCKER_MODS: linuxserver/calibre-web:calibre|linuxserver/mods:lazylibrarian-ffmpeg    
+  lidarr:
+    enabled: false
+  mylar:
+    enabled: false
+  nzbget:
+    enabled: false
+  nzbhydra:
+    enabled: false
+  ombi:
+    enabled: false
+  oscarr:
+    enabled: false
+  portainer:  
+    enabled: false
+  radarr:
+    enabled: false
+  radarr4k:
+    enabled: false
+  calibre_web:
+    enabled: true
+    env:
+      DOCKER_MODS: linuxserver/calibre-web:calibre    
+  restic:
+    enabled: false
+    env_backup: # Note that in the case of restic, there is no "env" leaf to this dictionary, since we create two separate env files
+    env_prune:
+  rtorrent:
+    enabled: false
+  sonarr:
+    enabled: false
+  sonarr4k:
+    enabled: false
+  sabnzbd:
+    enabled: false
+  keycloak:
+    enabled: false
+  huginn:
+    enabled: false
+  linx:
+    enabled: false
+  cyberchef:
+    enabled: false
+  funkwhale:
+    enabled: false
+  archivy:
+    enabled: false
+  mealie:
+    enabled: false    
+  joplin:
+    enabled: false
+  nightscout:
+    enabled: false
+  jellyfin:
+    enabled: false
+
+# Define the desired versions of various apps here
+packages:
+  github_actions_runner:
+    version: 2.274.2
+  rook_ceph:
+    version: v1.4.1
+  ceph:
+    ceph:
+      version: v15.2.1-20200410
+    daemon_base:
+      version: latest-octopus
+    cephcsi:
+      version: v2.0.1
+    csi_node_driver_registrar:
+      version: v1.2.0
+    csi_provisioner:
+      version: v1.4.0
+    csi_snapshotter:
+      version: v1.2.2
+    csi_attacher:
+      version: v2.1.0
+    csi_resizer:
+      version: v0.4.0
+  keepalived:
+    version: 2.0.20

@@ -1,0 +1,101 @@
+# The Ansible roles allow you to override certain aspects of the environment generation and recipe deployment.
+
+# This section describes options you can set in your group_vars/<your username>/main.yml to customize your Proxmox VM environment
+proxmox_vm_ram: 8192                                  # How much RAM to give each VM
+proxmox_vm_cores: 4                                  # How many processors to give each VM
+proxmox_vm_network_bridge: vmbr0                      # Which network to attach to each VM
+# proxmox_vm_vlan_tag: -1                                  # VLAN tag to assign to each VM. Comment out to use no VLAN
+proxmox_vm_disk0_size: 40G                            # Size of the primary (system) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+proxmox_vm_disk1_size: 20G                            # Size of the secondary (data) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+proxmox_storage: vmstorage                                 # Which Proxmox storage
+proxmox_vlan_gateway: 10.10.3.1                    # Network gateway for the VM network adapter
+terraform_dir: ~/.terraform/ubuntu  # Directory to store the generated Terraform files
+temp_dir: ~/.temp/ubuntu  # Directory to store the generated files temporarily, cleaned after every run
+admin_ssh_user: ubuntu                      # User to be created on each VM
+admin_ssh_key:                       # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
+proxmox_host_name: proxmox.domain.com             # Name of the proxmox host that commands will be run against
+proxmox_host_username: root@pam                       # Proxmox user name for running commands
+
+# These values are supplied by default using vars/01_fake_vault.yml, and hopefully overridden
+# by your own vars/vault.yml (encrypted)
+
+proxmox_host_password: "{{ vault_proxmox_host_password }}"
+
+# Set this value to your DNS domain - it's used to generate URLs for the various recipes, such as "radarr.batman.com", "sabnzbd.batman.com", etc
+dns_domain: domain.com
+
+# k3s variables
+k3s_version: v1.22.2+k3s1
+ansible_user: ubuntu
+systemd_dir: /etc/systemd/system
+master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
+extra_server_args: "--write-kubeconfig-mode=644"
+extra_agent_args: ""
+
+# Gitlab variables
+# General config.
+gitlab_domain: gitlab.domain.com
+gitlab_external_url: "https://{{ gitlab_domain }}/"
+gitlab_git_data_dir: "/var/opt/gitlab/git-data"
+gitlab_edition: "gitlab-ce"
+gitlab_version: ''
+gitlab_backup_path: "/var/opt/gitlab/backups"
+gitlab_config_template: "gitlab.rb.j2"
+
+# SSL Configuration.
+gitlab_redirect_http_to_https: true
+gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+
+# # SMTP Configuration
+# gitlab_smtp_enable: true
+# gitlab_smtp_address: "smtp.local.domain.com"  
+# gitlab_smtp_port: "25"
+# # gitlab_smtp_user_name: "s"
+# # gitlab_smtp_password: "smtp password"
+# # gitlab_smtp_domain: "example.com"
+# gitlab_smtp_authentication: "none"
+# gitlab_smtp_enable_starttls_auto: false
+# gitlab_smtp_tls: false
+# gitlab_smtp_openssl_verify_mode: "none"
+# gitlab_smtp_ca_path: "/etc/ssl/certs"
+# gitlab_smtp_ca_file: "/etc/ssl/certs/ca-certificates.crt"
+
+# 2-way SSL Client Authentication support.
+gitlab_nginx_ssl_verify_client: ""
+gitlab_nginx_ssl_client_certificate: ""
+
+# Probably best to leave this as the default, unless doing testing.
+gitlab_restart_handler_failed_when: 'gitlab_restart.rc != 0'
+
+# Optional settings.
+gitlab_time_zone: "America/Chicago"
+gitlab_backup_keep_time: "604800"
+gitlab_download_validate_certs: true
+gitlab_default_theme: '2'
+
+# Email configuration.
+gitlab_email_enabled: true
+gitlab_email_from: "domain@gmail.com"
+gitlab_email_display_name: "Gitlab"
+gitlab_email_reply_to: "domain@gmail.com"
+
+# Registry configuration.
+gitlab_registry_enable: false
+
+# metallb variables
+# put IP range here
+# examples: 
+# - 192.168.1.0/24
+# - 192.168.2.41/29
+# - 192.168.3.40-192.168.3.60
+metallb_ip_range: 10.10.3.150-10.10.3.180
+
+# traefik variables
+acme_email: domain@gmail.com
+traefik_auth_base64: '{{ vault_traefik_auth_base64 }}'
+cloudflare_email: domain@gmail.com
+cloudflare_api_key: "{{ vault_CF_API_KEY }}"
+# must run 'htpasswd -nb demo change_me_now | openssl base64' and put result below
+vault_traefik_auth_base64: ZGVtbzokYXByMSR4aVlYRjd1TCQ0UnlnM1NHZ2JiMmNGaUIyZTdwcmYwCgo=
+acme_endpoint: https://acme-staging-v02.api.letsencrypt.org/directory

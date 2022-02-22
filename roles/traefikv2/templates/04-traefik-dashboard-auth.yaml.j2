@@ -1,0 +1,12 @@
+---
+# traefik-dashboard-auth.yml
+# must run "htpasswd -nb username 'pass' | openssl base64" and put in vault as the key vault_traefik_auth_base64
+# main.yml converts vault_traefik_auth_base64 to traefik_auth_base64 to work with multiple roles as needed
+apiVersion: v1
+kind: Secret
+metadata:
+  name: traefik-dashboard-auth
+  namespace: traefik
+data:
+  users: |2
+    {{ traefik_auth_base64 }}

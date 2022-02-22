@@ -1,0 +1,89 @@
+- name: Prepare traefik config files locally
+  delegate_to: localhost
+  block:
+  - name: Create temporary directory for terraform plan
+    file:
+      name: "{{ temp_dir }}"
+      state: directory
+
+  - name: "Are there existing .yaml files in {{ temp_dir }}?"
+    find:
+      paths: "{{ temp_dir }}"
+      patterns: "*.yaml,*.yml,*.j2"
+    register: files_to_delete
+
+  - name: "Delete any yaml files found in {{ temp_dir }}"
+    file:
+      path: "{{ item.path }}"
+      state: absent
+    with_items: "{{ files_to_delete.files }}"
+
+  - name: Prepare traefik namespace creation file for traefik
+    template:
+      src: 01-traefik-namespace.yaml.j2
+      dest: "{{ temp_dir}}/01-traefik-namespace.yml"
+
+  - name: Prepare cloudflare credentials file for secret creation
+    template:
+      src: 02-cloudflare-credentials.yaml.j2
+      dest: "{{ temp_dir}}/02-cloudflare-credentials.yml"
+
+  - name: Prepare traefik configmap file for traefik config
+    template:
+      src: 03-traefik-configmap.yaml.j2
+      dest: "{{ temp_dir}}/03-traefik-configmap.yml"
+
+  - name: Prepare traefik dashboard configuration file
+    template:
+      src: 04-traefik-dashboard-auth.yaml.j2
+      dest: "{{ temp_dir}}/04-traefik-dashboard-auth.yml"
+  
+  - name: Prepare traefik ingress routes
+    template:
+      src: 05-traefik-ingress-routes.yaml.j2
+      dest: "{{ temp_dir}}/05-traefik-ingress-routes.yml"
+  
+  - name: Prepare traefik ingress routes tcps
+    template:
+      src: 06-traefik-ingress-routestcps.yaml.j2
+      dest: "{{ temp_dir}}/05-traefik-ingressroutestcps.yml"  
+  
+  - name: Prepare traefik ingress middlewares
+    template:
+      src: 07-traefik-ingress-middlewares.yaml.j2
+      dest: "{{ temp_dir}}/067-traefik-ingress-middlewares.yml"
+  
+  - name: Prepare traefik ingress tlsoptions
+    template:
+      src: 08-traefik-ingress-tlsoptions.yaml.j2
+      dest: "{{ temp_dir}}/08-traefik-ingress-tlsoptions.yml"
+  
+  - name: Prepare traefik ingress controller
+    template:
+      src: 09-traefik-ingress-controller.yaml.j2
+      dest: "{{ temp_dir}}/09-traefik-ingress-controller.yml"
+  
+  - name: Prepare traefik ingress middlewares
+    template:
+      src: 10-traefik-ingress-svcacct.yaml.j2
+      dest: "{{ temp_dir}}/10-traefik-ingress-svcacct.yml"
+  
+  - name: Prepare traefik ingress middlewares
+    template:
+      src: 11-traefik-ingress.yaml.j2
+      dest: "{{ temp_dir}}/11-traefik-ingress.yml"      
+  
+  - name: Prepare traefik ingress middlewares
+    template:
+      src: 12-traefik-chart-values.yaml.j2
+      dest: "{{ temp_dir}}/traefik-chart-values.yml"
+  
+  - name: Prepare traefik ingress middlewares
+    template:
+      src: 13-traefik-dashboard-basicauth.yaml.j2
+      dest: "{{ temp_dir}}/13-traefik-dashboard-basicauth.yml"
+      
+# - name: copy to master node(s) to be applied
+
+
+

@@ -1,0 +1,6 @@
+temp_dir: ~/.temp/ubuntu
+# su_password: 12qwaszx!@QWASZX
+# vault_cloudflare_email: tucker.erid.d@gmail.com
+# vault_cloudflare_api_key: cf7670017f2eee8fde0c4a8a6e9878a216aaa
+# # must run 'htpasswd -nb demo change_me_now | openssl base64' and put result below
+# vault_traefik_auth_base64: cGlyYXRlOiRhcHIxJFd3OXJnSmcxJGRWRkQ0UEMvOW1tWmljRWdVMW9wNS8KCg==

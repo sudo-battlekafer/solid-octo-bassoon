@@ -1,0 +1,14 @@
+additionalArguments:
+  - --entryPoints.web.http.redirections.entryPoint.to=:443
+  - --entryPoints.websocket.address=:9001
+ssl:
+  insecureSkipVerify: true
+rbac:
+  enabled: true
+dashboard:
+  enabled: true
+  ingressRoute: true
+kubernetes:
+  namespaces:
+    - default
+    - kube-system

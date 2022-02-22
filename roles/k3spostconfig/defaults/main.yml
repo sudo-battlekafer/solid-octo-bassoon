@@ -1,0 +1,5 @@
+# defaults for k3spostconfig
+KUBECONFIG: /home/{{ admin_ssh_user }}/.kube/{{ cluster_name }}-config
+
+
+
