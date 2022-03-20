@@ -1,9 +1,9 @@
 resource "proxmox_vm_qemu" "{{ inventory_hostname_short }}" {
     count = 1
-    name = "ettdev-{{ inventory_hostname_short }}"
+    name = "homelab-{{ inventory_hostname_short }}"
     target_node = "pve"
     vmid = {{ vm_id }}
-    clone = "template-ettdev-pve"
+    clone = "template-homelab-pve"
     os_type = "cloud-init"
     ipconfig0 = "ip={{ ansible_host }}/24,gw={{ proxmox_vlan_gateway }}"  
     nameserver = "10.11.3.1"  
