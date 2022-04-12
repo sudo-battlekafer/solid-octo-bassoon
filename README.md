@@ -56,12 +56,6 @@ For this playbook, you need a minimum of FOUR variables in your vault:
 
 Good link on [digital ocean](https://www.digitalocean.com/community/tutorials/how-to-use-vault-to-protect-sensitive-ansible-data)
 
-PLAYBOOK
-====
-  To run the playbook, run the command: 
-  `ansible-playbook -i /path/to/hostsfile site.yml -vault-password-file /path/to/passwordfile`
-  
-  
 TODO
 ====
 
