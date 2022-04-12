@@ -10,6 +10,10 @@
   stat: path=/usr/bin/gitlab-ctl
   register: gitlab_file
 
+- name: Pause for 5 minutes to allow unattended upgrades to finish
+  pause:
+    minutes: 5
+
 # Check for unattended-upgrades
 - name: Wait for /var/lib/dpkg/lock-frontend to be released   
   shell: while lsof /var/lib/dpkg/lock-frontend ; do sleep 10; done

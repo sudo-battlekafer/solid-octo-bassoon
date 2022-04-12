@@ -8,80 +8,66 @@ proxmox_vm_network_bridge: vmbr0                      # Which network to attach 
 proxmox_vm_disk0_size: 40G                            # Size of the primary (system) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
 proxmox_vm_disk1_size: 20G                            # Size of the secondary (data) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
 proxmox_storage: vmstorage                                 # Which Proxmox storage
-proxmox_vlan_gateway: 10.10.3.1                    # Network gateway for the VM network adapter
-terraform_dir: ~/.terraform/ubuntu  # Directory to store the generated Terraform files
-temp_dir: ~/.temp/ubuntu  # Directory to store the generated files temporarily, cleaned after every run
+proxmox_vlan_gateway: 10.10.2.1                    # Network gateway for the VM network adapter
+terraform_dir: ~/.terraform/  # Directory to store the generated Terraform files
+temp_dir: ~/.temp/  # Directory to store the generated files temporarily, cleaned after every run
 admin_ssh_user: ubuntu                      # User to be created on each VM
-admin_ssh_key:                       # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
-proxmox_host_name: proxmox.domain.com             # Name of the proxmox host that commands will be run against
+admin_ssh_key: ssh-rsa  # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
+proxmox_host_name: pve.local.example.com            # Name of the proxmox host that commands will be run against
 proxmox_host_username: root@pam                       # Proxmox user name for running commands
+
+
+# This section describes options you can set in your group_vars/<your username>/main.yml to customize your vSphere VM environment
+# vsphere_datacenter: homelab
+# vsphere_datastore: FASTAF
+# vsphere_compute_cluster: cluster1
+# vsphere_network: Servers
+# vsphere_template_folder: Templates
+# vsphere_template_name: Ubuntu-2004
+# vsphere_homelab_folder: k3s
+# vsphere_vm_ram: 8192                                  # How much RAM to give each VM
+# vsphere_vm_cores: 4                                   # How many processors to give each VM
+# vsphere_vm_disk0_size: 60                            # Size of the primary (system) disk on each VM (append M for megabytes, G for Gigabytes, T for Terabytes)
+# vsphere_vlan_gateway: 10.10.2.1                       # Network gateway for the VM network adapter
+# vsphere_dns_server: 10.10.2.1                         #Set to your DNS server
+# terraform_dir: ~/.terraform/                    # Directory to store the generated Terraform files
+# admin_ssh_user: ubuntu                                # User to be created on each VM
+# # admin_ssh_key: ssh-rsa  # Your *public* SSH key to be installed on the VM for the admin_ssh_user account
+# vsphere_host_name: vcsa.local.example.com         # Name of the vsphere host that commands will be run against
+# vsphere_host_username: administrator@vsphere.local            # vsphere user name for running commands
 
 # These values are supplied by default using vars/01_fake_vault.yml, and hopefully overridden
 # by your own vars/vault.yml (encrypted)
 
 proxmox_host_password: "{{ vault_proxmox_host_password }}"
-
+vcenter_host_password: "{{ vault_vcenter_host_password }}"
 # Set this value to your DNS domain - it's used to generate URLs for the various recipes, such as "radarr.batman.com", "sabnzbd.batman.com", etc
-dns_domain: domain.com
+dns_domain: etuckertime.com
 
 # k3s variables
-k3s_version: v1.22.2+k3s1
-ansible_user: ubuntu
+k3s_version: v1.23.4+k3s1
+ansible_user: pirate
 systemd_dir: /etc/systemd/system
-master_ip: "{{ hostvars[groups['master'][0]]['ansible_host'] | default(groups['master'][0]) }}"
-extra_server_args: "--write-kubeconfig-mode=644"
-extra_agent_args: ""
+# master_ip: "{{ hostvars[groups['k3s_masters'][0]]['ansible_host'] | default(groups['k3s_masters'][0]) }}"
+extra_server_args: "--no-deploy servicelb --no-deploy traefik --write-kubeconfig-mode 644 --kube-apiserver-arg default-not-ready-toleration-seconds=30 --kube-apiserver-arg default-unreachable-toleration-seconds=30 --kube-controller-arg node-monitor-period=20s --kube-controller-arg node-monitor-grace-period=20s --kubelet-arg node-status-update-frequency=5s"
+extra_agent_args: "--kubelet-arg node-status-update-frequency=5s"
+# interface which will be used for flannel
+flannel_iface: "ens192"
 
-# Gitlab variables
-# General config.
-gitlab_domain: gitlab.domain.com
-gitlab_external_url: "https://{{ gitlab_domain }}/"
-gitlab_git_data_dir: "/var/opt/gitlab/git-data"
-gitlab_edition: "gitlab-ce"
-gitlab_version: ''
-gitlab_backup_path: "/var/opt/gitlab/backups"
-gitlab_config_template: "gitlab.rb.j2"
+# k3s_token is required  masters can talk together securely
+# this token should be alpha numeric only
+# random generator URL used for mine: https://www.random.org/strings/
+k3s_token: ""
 
-# SSL Configuration.
-gitlab_redirect_http_to_https: true
-gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
-gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+# image tag for kube-vip
+kube_vip_tag_version: "v0.4.2"
 
-# # SMTP Configuration
-# gitlab_smtp_enable: true
-# gitlab_smtp_address: "smtp.local.domain.com"  
-# gitlab_smtp_port: "25"
-# # gitlab_smtp_user_name: "s"
-# # gitlab_smtp_password: "smtp password"
-# # gitlab_smtp_domain: "example.com"
-# gitlab_smtp_authentication: "none"
-# gitlab_smtp_enable_starttls_auto: false
-# gitlab_smtp_tls: false
-# gitlab_smtp_openssl_verify_mode: "none"
-# gitlab_smtp_ca_path: "/etc/ssl/certs"
-# gitlab_smtp_ca_file: "/etc/ssl/certs/ca-certificates.crt"
+# apiserver_endpoint is virtual ip-address which will be configured on each master
+apiserver_endpoint: "10.10.2.200"
 
-# 2-way SSL Client Authentication support.
-gitlab_nginx_ssl_verify_client: ""
-gitlab_nginx_ssl_client_certificate: ""
-
-# Probably best to leave this as the default, unless doing testing.
-gitlab_restart_handler_failed_when: 'gitlab_restart.rc != 0'
-
-# Optional settings.
-gitlab_time_zone: "America/Chicago"
-gitlab_backup_keep_time: "604800"
-gitlab_download_validate_certs: true
-gitlab_default_theme: '2'
-
-# Email configuration.
-gitlab_email_enabled: true
-gitlab_email_from: "domain@gmail.com"
-gitlab_email_display_name: "Gitlab"
-gitlab_email_reply_to: "domain@gmail.com"
-
-# Registry configuration.
-gitlab_registry_enable: false
+# image tag for metal lb
+metal_lb_speaker_tag_version: "v0.12.1"
+metal_lb_controller_tag_version: "v0.12.1"
 
 # metallb variables
 # put IP range here
@@ -89,13 +75,57 @@ gitlab_registry_enable: false
 # - 192.168.1.0/24
 # - 192.168.2.41/29
 # - 192.168.3.40-192.168.3.60
-metallb_ip_range: 10.10.3.150-10.10.3.180
+metal_lb_ip_range: 10.10.2.150-10.10.2.180
 
-# traefik variables
-acme_email: domain@gmail.com
-traefik_auth_base64: '{{ vault_traefik_auth_base64 }}'
-cloudflare_email: domain@gmail.com
-cloudflare_api_key: "{{ vault_CF_API_KEY }}"
-# must run 'htpasswd -nb demo change_me_now | openssl base64' and put result below
-vault_traefik_auth_base64: ZGVtbzokYXByMSR4aVlYRjd1TCQ0UnlnM1NHZ2JiMmNGaUIyZTdwcmYwCgo=
-acme_endpoint: https://acme-staging-v02.api.letsencrypt.org/directory
+# Gitlab variables
+# unneeded if not deploying standalone gitlab
+# General config.
+# gitlab_domain: gitlab.domain.com
+# gitlab_external_url: "https://{{ gitlab_domain }}/"
+# gitlab_git_data_dir: "/var/opt/gitlab/git-data"
+# gitlab_edition: "gitlab-ce"
+# gitlab_version: ''
+# gitlab_backup_path: "/var/opt/gitlab/backups"
+# gitlab_config_template: "gitlab.rb.j2"
+
+# # SSL Configuration.
+# gitlab_redirect_http_to_https: true
+# gitlab_ssl_certificate: "/etc/gitlab/ssl/{{ gitlab_domain }}.crt"
+# gitlab_ssl_certificate_key: "/etc/gitlab/ssl/{{ gitlab_domain }}.key"
+
+# # # SMTP Configuration
+# # gitlab_smtp_enable: true
+# # gitlab_smtp_address: "smtp.local.domain.com"  
+# # gitlab_smtp_port: "25"
+# # # gitlab_smtp_user_name: "s"
+# # # gitlab_smtp_password: "smtp password"
+# # # gitlab_smtp_domain: "example.com"
+# # gitlab_smtp_authentication: "none"
+# # gitlab_smtp_enable_starttls_auto: false
+# # gitlab_smtp_tls: false
+# # gitlab_smtp_openssl_verify_mode: "none"
+# # gitlab_smtp_ca_path: "/etc/ssl/certs"
+# # gitlab_smtp_ca_file: "/etc/ssl/certs/ca-certificates.crt"
+
+# # 2-way SSL Client Authentication support.
+# gitlab_nginx_ssl_verify_client: ""
+# gitlab_nginx_ssl_client_certificate: ""
+
+# # Probably best to leave this as the default, unless doing testing.
+# gitlab_restart_handler_failed_when: 'gitlab_restart.rc != 0'
+
+# # Optional settings.
+# gitlab_time_zone: "America/Chicago"
+# gitlab_backup_keep_time: "604800"
+# gitlab_download_validate_certs: true
+# gitlab_default_theme: '2'
+
+# # Email configuration.
+# gitlab_email_enabled: true
+# gitlab_email_from: "domain@gmail.com"
+# gitlab_email_display_name: "Gitlab"
+# gitlab_email_reply_to: "domain@gmail.com"
+
+# # Registry configuration.
+# gitlab_registry_enable: false
+

@@ -21,7 +21,7 @@ To start:
 4. create ansible vault (DON'T USE THE EXAMPLE!) more information [here](#ansible_vault)
 
 # hosts
-- rename EXAMPLE to your project (try and match the folder name, makes life easier)
+- rename EXAMPLE to your project (match the folder name, makes life easier)
 - update IPs/subnet
 - save
 
@@ -33,12 +33,7 @@ everything is customizable, but at the minimum, update these:
 - proxmox_vlan_gateway
 - proxmox_host_name
 - dns_domain
-- gitlab_domain (if you use gitlab in this playbook)
 - metallb_ip_range
-- acme_email
-- cloudflare_email
-- vault_traefik_auth_base64 (can even keep this in the vault if you like)
-
 
 # ansible_vault
 To create and ansible vault, the command is:
@@ -65,9 +60,8 @@ TODO
 ====
 
 - add in NAS backup
-- finish tagging the roles
+- finish tagging the roles (eventually)
 - adding offsite backup lookup
-- paramaterize the hardcoded tasks I have
-- add in chart templates for the arrs'
-- add in esxi support
+- add in Packer support for VMware template automation
 
+Huge thanks to [TechnoTim](https://github.com/techno-tim) for his work on forking the work and making me inspired to get to this point

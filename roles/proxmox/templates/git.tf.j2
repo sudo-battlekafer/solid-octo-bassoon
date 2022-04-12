@@ -17,9 +17,9 @@ resource "proxmox_vm_qemu" "{{ inventory_hostname_short }}" {
     bootdisk = "scsi0"    
     vcpus = 0
 
-    sshkeys = <<EOF
-{{ admin_ssh_key }}
-EOF
+    #sshkeys = <<EOF
+#{{ admin_ssh_key }}
+#EOF
     network {
 
         model = "virtio"
