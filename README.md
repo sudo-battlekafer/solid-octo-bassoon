@@ -26,7 +26,7 @@ To start:
 - save
 
 # group_vars
-everything is customizable, but at the minimum, update these:
+everything is customizable, but at the minimum, update these to use Proxmox:
 - admin_ssh_user
 - admin_ssh_key (full ssh-rsa dfjklsdfjds user@machine)
 - proxmox_storage
@@ -59,9 +59,9 @@ Good link on [digital ocean](https://www.digitalocean.com/community/tutorials/ho
 TODO
 ====
 
-- add in NAS backup
 - finish tagging the roles (eventually)
 - adding offsite backup lookup
 - add in Packer support for VMware template automation
+- local requirements check/install
 
-Huge thanks to [TechnoTim](https://github.com/techno-tim) for his work on forking the work and making me inspired to get to this point
+Huge thanks to [TechnoTim](https://github.com/techno-tim) for his work and making me inspired to get to this point.
