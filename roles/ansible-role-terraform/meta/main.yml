@@ -1,0 +1,82 @@
+galaxy_info:
+  role_name: terraform
+  author: diodonfrost
+  company: diodonfrost
+  description: Ansible role for install the latest version of Terraform
+  license: license Apache
+
+  min_ansible_version: 2.5
+
+  platforms:
+    - name: EL
+      versions:
+        - 8
+        - 7
+    - name: Fedora
+      versions:
+        - 29
+        - 28
+        - 27
+        - 26
+    - name: Debian
+      versions:
+        - buster
+        - stretch
+        - jessie
+        - wheezy
+        - squeeze
+    - name: Ubuntu
+      versions:
+        - bionic
+        - xenial
+        - trusty
+    - name: Amazon
+      versions:
+        - 2017.12
+        - 2016.03
+    - name: opensuse
+      versions:
+        - 15.2
+        - 15.1
+        - 15.0
+        - 42.2
+        - 42.1
+    - name: ArchLinux
+      versions:
+        - any
+    - name: Alpine
+      versions:
+        - any
+    - name: Gentoo
+      versions:
+        - any
+    - name: ClearLinux
+      versions:
+        - any
+    - name: FreeBSD
+      versions:
+        - 11.2
+        - 10.4
+        - 10.3
+    - name: OpenBSD
+      versions:
+        - 6.0
+        - 6.4
+    - name: MacOSX
+      versions:
+        - 10.11
+        - 10.12
+        - 10.13
+    - name: Windows
+      versions:
+        - 2016
+        - 2012R2
+
+  galaxy_tags:
+    - system
+    - packaging
+    - cloud
+    - terraform
+    - hashicorp
+
+dependencies: []

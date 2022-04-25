@@ -1,4 +1,12 @@
 ---
+# setup and check if terraform and packer are installed on localhost
+# terraform
+- hosts: localhost
+  gather_facts: no
+  become: yes
+  tasks: 
+  - { import_role: { name: ansible-role-terraform }, tags: [ infrastructure ], become: no }
+  - { import_role: { name: ansible-role-packer }, tags: [ infrastructure ], become: no }
 
 # If we have any proxmox hosts, then use them to create the necessary VMs
 - hosts: proxmox_servers:proxmox_vms

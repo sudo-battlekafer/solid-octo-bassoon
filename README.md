@@ -59,9 +59,10 @@ Good link on [digital ocean](https://www.digitalocean.com/community/tutorials/ho
 TODO
 ====
 
-- finish tagging the roles (eventually)
-- adding offsite backup lookup
-- add in Packer support for VMware template automation
-- local requirements check/install
+- finish tagging the roles (eventually, maybe)
+~~- adding offsite backup lookup~~
+- add in Packer support for template automation (VMWare/Proxmox)
+- local requirements check/install (think I got this now)
+- issues with assigning static IPs with Terraform
 
 Huge thanks to [TechnoTim](https://github.com/techno-tim) for his work and making me inspired to get to this point.
