@@ -60,7 +60,7 @@ TODO
 ====
 
 - finish tagging the roles (eventually, maybe)
-~~- adding offsite backup lookup~~
+- ~~adding offsite backup lookup~~ (out of scope)
 - add in Packer support for template automation (VMWare/Proxmox)
 - local requirements check/install (think I got this now)
 - issues with assigning static IPs with Terraform
