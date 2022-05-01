@@ -42,11 +42,11 @@ proxmox_host_username: root@pam                       # Proxmox user name for ru
 proxmox_host_password: "{{ vault_proxmox_host_password }}"
 vcenter_host_password: "{{ vault_vcenter_host_password }}"
 # Set this value to your DNS domain - it's used to generate URLs for the various recipes, such as "radarr.batman.com", "sabnzbd.batman.com", etc
-dns_domain: etuckertime.com
+dns_domain: DOMAIN.com
 
 # k3s variables
 k3s_version: v1.23.4+k3s1
-ansible_user: pirate
+ansible_user: ubuntu
 systemd_dir: /etc/systemd/system
 # master_ip: "{{ hostvars[groups['k3s_masters'][0]]['ansible_host'] | default(groups['k3s_masters'][0]) }}"
 extra_server_args: "--no-deploy servicelb --no-deploy traefik --write-kubeconfig-mode 644 --kube-apiserver-arg default-not-ready-toleration-seconds=30 --kube-apiserver-arg default-unreachable-toleration-seconds=30 --kube-controller-arg node-monitor-period=20s --kube-controller-arg node-monitor-grace-period=20s --kubelet-arg node-status-update-frequency=5s"
