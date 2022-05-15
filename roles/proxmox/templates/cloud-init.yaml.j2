@@ -5,10 +5,10 @@ manage_etc_hosts: true
 chpasswd:
   expire: False
 users:
-  - name: pirate
+  - name: ubuntu
     sudo: ALL=(ALL) NOPASSWD:ALL
     ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCiRDDHu5i3aKKjCgToIJ8Lto6N/OSFRxEbeCtSepySkm3uOyFcHewRCnZdeKj89VKzH3Tzd4iaOJGmF6yGbUgsv7VPlsCNNT5jN3w7OvOh4E8djEH3LP9y+sSj0i6y0jJQY60T8Tg5Q0NabChtO2nRmV4I++zCuksjxi>
+      - ssh-rsa
 
 package_upgrade: true
 packages:
